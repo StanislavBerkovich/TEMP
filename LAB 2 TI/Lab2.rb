@@ -1,4 +1,3 @@
-require 'pry'
 require 'gruff'
 
 class Pair
@@ -91,7 +90,6 @@ class Lab2
 
   def graph_family
     for_params = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
-    res = {10**3 => {}, 10**5 => {}}
     puts "Graph family"
     [10**3, 10**5].each do |t|
       for_params.each do |alpha|
@@ -103,7 +101,6 @@ class Lab2
             es << entropy_Y_X
             ems << empirical_entropy_Y_X
             xs << (1-alpha - beta).abs.round(1)
-            res[t][(1-alpha - beta).abs.round(1)] = {'entropy' => entropy_Y_X, 'empirical_entropy' => empirical_entropy_Y_X}
           end
         end
         draw_gruff(title: "alpha = #{alpha}", xs: xs, data: [['Entropy', es], ['Empirical Entropy', ems]])
@@ -230,23 +227,23 @@ class Lab2
 end
 
 
-#  data = [[0.3, 0.8, 0.5], [0.7, 0.2, 0.6], [0.3, 0.5, 0.4], [0.4, 0.5, 0, 6]]
-#  data.each do |d|
-#     l = Lab2.new 20, d[0], d[1], d[2]
-#    puts "Alpha = #{l.alpha}, Beta = #{l.beta}, Pi1 = #{l.px}"
-#  puts 'Sequence:'
-#   l.seq.arr.each do |a|
-#     print "#{a}, "
-#   end
-#   puts
-#   puts "Entropy X | Y : ", l.entropy_X_Y
-#   puts "Entropy Y | X : ", l.entropy_Y_X
-#   puts "Empiric Entropy X | Y : ", l.empirical_entropy_X_Y
-#   puts "Empiric Entropy Y | X : ", l.empirical_entropy_Y_X
-#    puts "Entropy Y | X+Y : ", l.entropy_Y_XplY
-#    puts "Empiric Entropy Y | X+Y", l.empirical_entropy_Y_XplY
-#   l.graph_info
+data = [[0.3, 0.8, 0.5], [0.7, 0.2, 0.6], [0.3, 0.5, 0.4], [0.4, 0.5, 0, 6]]
+data.each do |d|
+  l = Lab2.new 20, d[0], d[1], d[2]
+  puts "Alpha = #{l.alpha}, Beta = #{l.beta}, Pi1 = #{l.px}"
+  puts 'Sequence:'
+  l.seq.arr.each do |a|
+    print "#{a}, "
+  end
+  puts
+  puts "Entropy X | Y : ", l.entropy_X_Y
+  puts "Entropy Y | X : ", l.entropy_Y_X
+  puts "Empiric Entropy X | Y : ", l.empirical_entropy_X_Y
+  puts "Empiric Entropy Y | X : ", l.empirical_entropy_Y_X
+  puts "Entropy Y | X+Y : ", l.entropy_Y_XplY
+  puts "Empiric Entropy Y | X+Y", l.empirical_entropy_Y_XplY
+  l.graph_info
 
-# end
-l = Lab2.new 20, 1, 0.2, 0.4
+end
+l = Lab2.new 1, 1, 0.2, 0.4
 l.graph_family
