@@ -1,4 +1,5 @@
 require 'gruff'
+require 'pry'
 
 class Pair
   attr_reader :x, :y
@@ -69,7 +70,7 @@ class Lab2
   end
 
   def entropy_Y_X
-    entropy(@dist.py.flatten)
+    entropy_XY - entropy([@px, 1-@px])
   end
 
   def entropy_Y_XplY
@@ -103,10 +104,9 @@ class Lab2
             xs << (1-alpha - beta).abs.round(1)
           end
         end
-        draw_gruff(title: "alpha = #{alpha}", xs: xs, data: [['Entropy', es], ['Empirical Entropy', ems]])
+        draw_gruff(title: "alpha = #{alpha}, T = #{t}", xs: xs, data: [['Entropy', es], ['Empirical Entropy', ems]])
       end
     end
-    res
   end
 
   def graph_info
@@ -185,27 +185,15 @@ class Lab2
   end
 
   def entropy_XY
-    unless @entropyXY
-      @entropyXY = entropy([@px, 1-@px]) + entropy_Y_X
-    else
-      @entropyXY
-    end
+    entropy([@px * @alpha, @px * (1 - @alpha), (1 - @px) * (1 - @beta), (1 - @px) * @beta])
   end
 
   def entropy_Y
-    unless @entropyY
-      @entropyY = entropy([@alpha * (1 - @px) + @px * (1-@beta), @beta * @px + (1-@alpha) * (1-@px)])
-    else
-      @entropyY
-    end
+    entropy([@alpha * (1 - @px) + @px * (1-@beta), @beta * @px + (1-@alpha) * (1-@px)])
   end
 
   def entropy_XplY
-    unless @entropyXplY
-      @entropyXplY = entropy([@px * @alpha, @px *(1- @beta) + (1 - @px) *(1- @alpha), @px * @beta])
-    else
-      @entropyXplY
-    end
+    entropy([@px * @alpha, @px *(1- @beta) + (1 - @px) *(1- @alpha), @px * @beta])
   end
 
   def draw_gruff hash
@@ -227,9 +215,10 @@ class Lab2
 end
 
 
-data = [[0.3, 0.8, 0.5], [0.7, 0.2, 0.6], [0.3, 0.5, 0.4], [0.4, 0.5, 0, 6]]
+data = [[0.3, 0.8, 0.5], [0.7, 0.2, 0.6], [0.3, 0.5, 0.4], [0.4, 0.5, 0.6]]
 data.each do |d|
-  l = Lab2.new 20, d[0], d[1], d[2]
+d = data[3]
+  l = Lab2.new 20,d[0], d[1],d[2]
   puts "Alpha = #{l.alpha}, Beta = #{l.beta}, Pi1 = #{l.px}"
   puts 'Sequence:'
   l.seq.arr.each do |a|
@@ -243,7 +232,6 @@ data.each do |d|
   puts "Entropy Y | X+Y : ", l.entropy_Y_XplY
   puts "Empiric Entropy Y | X+Y", l.empirical_entropy_Y_XplY
   l.graph_info
-
 end
-l = Lab2.new 1, 1, 0.2, 0.4
+l = Lab2.new 100, 0, 0, 0
 l.graph_family
