@@ -1,4 +1,4 @@
-require 'pry'
+require 'gruff'
 class MarkovGen
 	def initialize extent, hash
 		@extent = extent
@@ -13,7 +13,6 @@ class MarkovGen
 	end
 
 	def teor_udel_entropy
-		# entropy(@p_s) + ( - @extent) * entropy(@p.flatten @extent)
 		entropy(@p.flatten(@extent - 1))
 	end
 
@@ -26,20 +25,15 @@ class MarkovGen
     es, ems, ts = [], [], [10, 100, 1000, 10**4, 10**5, 10**7]
     ts.each do |t|
       sum = 0
-      10.times do
+      100.times do
         seq = generate_sequence t: t
         sum += emperical_udel_entropy(seq)
-        # puts sum
       end
-      # puts sum / 10.0
-      # puts
-      ems << (sum / 10.0)
+      ems << (sum / 100.0)
      end
     tue = teor_udel_entropy
     ts.length.times { es << tue		}
     puts 'Draw gruff...'
-    # print ems
-    # puts
     draw_gruff(title: "Alphabet power: #{alpha_count} Extent: #{@extent}", xs: ts, data: [['Real', es], ['Empirical', ems]])
   end
 
@@ -54,6 +48,7 @@ class MarkovGen
     end
     g.write("#{hash[:title]}.png")
   end
+
   def to_get_keys arr
     res = {}
     arr.sort.each_with_index { |a, i| res[i] = a.to_s }
@@ -91,16 +86,6 @@ class MarkovGen
 	def generate_next arr
 		v, f = rand, 0
 		curr_p = @extent == 1 ? @p[arr.last] : @p[arr[-2]][arr.last]
-    if curr_p == nil
-      puts @extent
-      print @p
-      puts
-      print @p_s
-      puts
-      puts alpha_count
-      print arr
-      puts
-    end
 		curr_p.each_with_index do |p, i|
 			f += p
 			return i if v <= f
@@ -158,13 +143,13 @@ m3 = MarkovGen.new 2, {pi: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2], cube: 
 																																								[[0.7, 0.1, 0.2], [0.2, 0.6, 0.2], [0.5, 0.3, 0.2]]] }
 #алфавит 2, степень 2 																																								
 m4 = MarkovGen.new 2, {pi: [0.2, 0.3, 0.4, 0.1], cube: [[[0.3, 0.7], [0.5, 0.5]], [[0.2, 0.8], [0.6, 0.4]]]}
-# puts m.teor_udel_entropy
-# puts m.emperical_udel_entropy m.generate_sequence t: 1000000
-# m.graphic
 
-[m1, m2, m3, m4 ].each do |m|
+
+t = [15000, 10000, 100000, 150000]
+[ m1, m2, m3, m4 ].each_with_index do |m, i|
+  puts t[i]
   puts m.teor_udel_entropy
-  puts m.emperical_udel_entropy m.generate_sequence t: 10000
-  # m.graphic
+  puts m.emperical_udel_entropy m.generate_sequence t: t[i]
+  m.graphic
   puts
 end
