@@ -1,10 +1,8 @@
-require 'gruff'
+require 'pry'
 class MarkovGen
 	def initialize extent, hash
 		@extent = extent
 		@p_s = hash[:pi]
-    print hash[:pi]
-    puts
 		@p = extent == 1 ? hash[:mat] : hash[:cube]
 	end
 
@@ -16,11 +14,11 @@ class MarkovGen
 
 	def teor_udel_entropy
 		# entropy(@p_s) + ( - @extent) * entropy(@p.flatten @extent)
-		entropy(@p.flatten @extent)
+		entropy(@p.flatten(@extent - 1))
 	end
 
 	def emperical_udel_entropy seq
-		entropy(count_freq(seq).flatten @extent)
+		entropy(count_freq(seq).flatten(@extent-1))
   end
 
   def graphic
@@ -111,10 +109,10 @@ class MarkovGen
 
 	def entropy ps
     sum = 0
-    ps.each do |p|
-      sum -= p*Math.log2(p) if p > 10e-10
-    end
-    sum
+    @p_s.each_with_index do |q, i|
+	    	sum += q * ps[i].inject(0) { |sum, p|  p > 10e-10 ? (sum - p*Math.log2(p)) : sum }		    
+		end
+	  sum
 	end
 
 	def prepare_freq
@@ -151,26 +149,22 @@ class MarkovGen
 end
 
 #алфавит 3, степень 1
-# m = MarkovGen.new 1, {pi: [0.5, 0.3, 0.2 ], mat: [[0.3, 0.2, 0.5], [0.5, 0.1, 0.4], [0.8, 0.1, 0.1]]}
+m1 = MarkovGen.new 1, {pi: [0.5, 0.3, 0.2 ], mat: [[0.3, 0.2, 0.5], [0.5, 0.1, 0.4], [0.8, 0.1, 0.1]]}
 #алфавит 2, степень 1
-m = MarkovGen.new 1, {pi: [0.4, 0.6], mat: [[0.3, 0.7], [0.8, 0.2]]}
+m2 = MarkovGen.new 1, {pi: [0.4, 0.6], mat: [[0.3, 0.7], [0.8, 0.2]]}
 #алфавит 3, степень 2
-# m = MarkovGen.new 2, {pi: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2], cube: [[[0.3, 0.2, 0.5], [0.5, 0.1, 0.4], [0.8, 0.1, 0.1]],
-# 																																								[[0.2, 0.7, 0.1], [0.4, 0.1, 0.5], [0.6, 0.2, 0.2]],
-# 																																								[[0.7, 0.1, 0.2], [0.2, 0.6, 0.2], [0.5, 0.3, 0.2]]] }
+m3 = MarkovGen.new 2, {pi: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2], cube: [[[0.3, 0.2, 0.5], [0.5, 0.1, 0.4], [0.8, 0.1, 0.1]],
+																																								[[0.2, 0.7, 0.1], [0.4, 0.1, 0.5], [0.6, 0.2, 0.2]],
+																																								[[0.7, 0.1, 0.2], [0.2, 0.6, 0.2], [0.5, 0.3, 0.2]]] }
 #алфавит 2, степень 2 																																								
-# m = MarkovGen.new 2, {pi: [0.2, 0.3, 0.4, 0.1], cube: [[[0.3, 0.7], [0.5, 0.5]], [[0.2, 0.8], [0.6, 0.4]]]}
+m4 = MarkovGen.new 2, {pi: [0.2, 0.3, 0.4, 0.1], cube: [[[0.3, 0.7], [0.5, 0.5]], [[0.2, 0.8], [0.6, 0.4]]]}
 # puts m.teor_udel_entropy
 # puts m.emperical_udel_entropy m.generate_sequence t: 1000000
 # m.graphic
 
-# [MarkovGen.new(2, {pi: [0.2, 0.3, 0.4, 0.1], cube: [[[0.3, 0.7], [0.5, 0.5]], [[0.2, 0.8], [0.6, 0.4]]]}),
-# [MarkovGen.new(2, {pi: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 ], cube: [[[0.3, 0.2, 0.5], [0.5, 0.1, 0.4], [0.8, 0.1, 0.1]],
-#                                                                               [[0.2, 0.7, 0.1], [0.4, 0.1, 0.5], [0.6, 0.2, 0.2]],
-#                                                                               [[0.7, 0.1, 0.2], [0.2, 0.6, 0.2], [0.5, 0.3, 0.2]]] }),
-# MarkovGen.new(1, {pi: [0.5, 0.3, 0.2 ], mat: [[0.3, 0.2, 0.5], [0.5, 0.1, 0.4], [0.8, 0.1, 0.1]]}),
-# MarkovGen.new(1, {pi: [0.4, 0.6], mat: [[0.3, 0.7], [0.8, 0.2]]})].each do |m|
+[m1, m2, m3, m4 ].each do |m|
   puts m.teor_udel_entropy
-  puts m.emperical_udel_entropy m.generate_sequence t: 10**7
-  m.graphic
+  puts m.emperical_udel_entropy m.generate_sequence t: 10000
+  # m.graphic
   puts
+end
